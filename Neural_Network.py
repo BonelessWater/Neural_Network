@@ -10,11 +10,14 @@ def summation(array, node_pre_layer):
     
     return sum
 
-def sigmoid(x):
-    return 1 / (1 + math.pow(math.e, -x))
+def reLU(x):
+    if x < 0:
+        return 0
+    else:
+        return x
 
 def input_function(random_input):
-    return math.sin( math.pow(random_input[0], 2)) * math.cos(random_input[0])
+    return math.sin(2*random_input[0]) + math.cos(7*random_input[0])/8 + math.cos(3*random_input[0])/5  
 
 class BaseNetwork:
     def __init__(self, data, network_structure, best_weight_array):
@@ -100,8 +103,8 @@ class BaseNetwork:
                     if layer != 2:
                         self.network[layer][node][edge][0] = self.network[layer - 1][edge][-1]
         
-# Summation of signal times weight for each edge in a node and applies sigmoid function
-                self.network[layer][node][-1] = sigmoid(summation(self.network[layer][node], nodes_pre_layer))
+# Summation of signal times weight for each edge in a node and applies ReLU function
+                self.network[layer][node][-1] = reLU(summation(self.network[layer][node], nodes_pre_layer))
         print(self.network)
 
 
@@ -110,8 +113,8 @@ class BaseNetwork:
 
     def return_difference(self):
         x = self.network[-1][0][-1]
-        return ( math.pow(x , 2) - 
-                    math.pow(input_function(self.data), 2) )
+        return ( math.pow(x , 3) - 
+                    math.pow(input_function(self.data), 3) )
 
 def main(population, generation):
 
@@ -130,7 +133,7 @@ def main(population, generation):
 
         for j in range (population):
 
-            random_input = [random.uniform(-30, 30)]
+            random_input = [random.uniform(-10, 10)]
 
             newNetwork = BaseNetwork(random_input, network_structure, best_weight_array)
 
@@ -157,10 +160,15 @@ def main(population, generation):
     # print(generations)
 
     plt.scatter(x, y)
+
+    font = {'family':'serif','color':'darkred','size':15}
+    plt.xlabel("Generation", fontdict = font)
+    plt.ylabel("Square Difference", fontdict = font)
+
     plt.axhline(y = 0, color = 'r', linestyle = '-') 
     plt.show()
 
-main(2, 50)
+main(1, 10)
 
-# Have the code randomly alter the amount of nodes in the structure and rememebr to give it a random starting weight.
+# Have the code randomly alter the amount of nodes in the structure and remember to give it a random starting weight.
 # The structure must also be taken into acount when logging the "best" network. AKA weights and structure now become important.
